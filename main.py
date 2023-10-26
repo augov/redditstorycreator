@@ -21,7 +21,7 @@ min_words = 100  # default is 100, this is the minimum length (in words) of the 
 bgd_video = 'gameplay.mp4'  # default is gameplay.mp4, this is the video that plays in the background
 text_colour = 'white' # default is white, this is the color of the subtitle text
 font_size = 75 # default is 75, this is the size of the subtitle text
-stroke_weight = 5 # default is 5, this is the stroke size around the subtitle text
+stroke_weight = 4 # default is 4, this is the stroke size around the subtitle text
 stroke_colour = 'black' # default is black, this is the stroke color around the subtitle text
 
 
@@ -110,7 +110,7 @@ def createVideo(postnumber, commentnumber):
 
         if censor_text == True:
             body = censor(body)
-            body = censor(title)
+            title = censor(title)
 
         texttospeech(body,'comment')
         texttospeech(title,'output')
@@ -136,7 +136,7 @@ def createVideo(postnumber, commentnumber):
         y1, y2 = 0, h
         cropped_clip = crop(video, x1=x1, y1=y1, x2=x2, y2=y2)
 
-        title = ImageClip("post_title.png").set_start(0).set_duration(titlevoice.duration).set_pos(("center",100)).resize(width=500).crossfadein(1) # if you need to resize...
+        title = ImageClip("post_title.png").set_start(0).set_duration(titlevoice.duration).set_pos(("center",100)).resize(width=500) # if you need to resize...
 
         compositeclip = [cropped_clip, title]
 
