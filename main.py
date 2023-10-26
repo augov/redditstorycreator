@@ -14,7 +14,7 @@ api_key = '' # your elevenlabs api token goes here
 voice_id = 'pNInz6obpgDQGcFmaJgB' # default is pNInz6obpgDQGcFmaJgB, this is the text to speech voice id
 
 censor_text = True # default is True
-loop_number = 1 # default is 1, this is the how many video you want to make
+loop_number = 1 # default is 1, this is the how many videos you want to make
 subreddit = 'AskReddit'  # default is AskReddit, this is the reddit page you want to get the stories from
 min_words = 100  # default is 100, this is the minimum length (in words) of the story 
 
