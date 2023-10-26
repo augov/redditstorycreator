@@ -1,5 +1,7 @@
 from moviepy.editor import *
 from moviepy.video.fx.all import crop
+from skimage.filters import gaussian
+from moviepy.editor import VideoFileClip
 import whisper
 
 import requests
@@ -12,12 +14,12 @@ import random
 
 #here are your config things
 #----------------------------------------
-api_key = '' # your elevenlabs api token goes here
+api_key = 'c5e4c87cb259b14d45eeaff75f668612' # your elevenlabs api token goes here
 voice_id = 'pNInz6obpgDQGcFmaJgB' # default is pNInz6obpgDQGcFmaJgB, this is the text to speech voice id
 
 censor_text = True # default is True
 loop_number = 1 # default is 1, this is the how many videos you want to make
-subreddit = 'AskReddit'  # default is AskReddit, this is the reddit page you want to get the stories from
+subreddit = 'AskReddit' # default is AskReddit, this is the reddit page you want to get the stories from
 min_words = 100  # default is 100, this is the minimum length (in words) of the story 
 
 bgd_video = 'gameplay.mp4'  # default is gameplay.mp4, this is the video that plays in the background
@@ -25,6 +27,11 @@ text_colour = 'white' # default is white, this is the color of the subtitle text
 font_size = 75 # default is 75, this is the size of the subtitle text
 stroke_weight = 4 # default is 4, this is the stroke size around the subtitle text
 stroke_colour = 'black' # default is black, this is the stroke color around the subtitle text
+
+
+
+def blur(image):
+    return gaussian(image.astype(float), sigma=2)
 
 
 
@@ -126,9 +133,12 @@ def createVideo(postnumber, commentnumber):
 
         print('done transcribing!')
 
-        videolength = titlevoice.duration + commentvoice.duration + 1
+        videolength = titlevoice.duration + commentvoice.duration + 2
         video = VideoFileClip(bgd_video)
-        video = video.cutout(0, random.uniform(2,video.duration-videolength-2)).set_duration(videolength)
+        videostart = random.uniform(2,video.duration-videolength-2)
+        video = video.cutout(0, videostart).set_duration(videolength)
+
+        endingstart = videolength-1
 
         (w, h) = video.size
 
@@ -138,9 +148,13 @@ def createVideo(postnumber, commentnumber):
         y1, y2 = 0, h
         cropped_clip = crop(video, x1=x1, y1=y1, x2=x2, y2=y2)
 
+        blurred_video = cropped_clip.fl_image(blur).set_start(endingstart).set_duration(1).crossfadein(1)
+
+
+
         title = ImageClip("post_title.png").set_start(0).set_duration(titlevoice.duration).set_pos(("center",100)).resize(width=500) # if you need to resize...
 
-        compositeclip = [cropped_clip, title]
+        compositeclip = [cropped_clip, blurred_video, title]
 
 
         for i in range(segmentslength):
