@@ -6,7 +6,9 @@ import requests
 import json
 from selenium import webdriver
 import random
-import re
+
+# to install everything run the command "pip install -r requirements.txt" in terminal
+# you also need to install firefox into your python folder
 
 #here are your config things
 #----------------------------------------
