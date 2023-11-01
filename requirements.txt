@@ -1,4 +1,4 @@
-moviepy
-selenium
-whisper
-scikit-image
+moviepy==1.0.3
+selenium==3.141.0
+whisper==1.1.10
+scikit-image==0.22.0

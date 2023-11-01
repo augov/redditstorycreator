@@ -9,12 +9,22 @@ import json
 from selenium import webdriver
 import random
 
-# to install everything run the command "pip install -r requirements.txt" in terminal
-# you also need to install firefox into your python folder
+# THINGS TO INSTALL:
+# firefox: you need to copy the firefox files to your python folder in order for this to work
+# ffmpeg: this video (https://www.youtube.com/watch?v=EyIIvctDhYc) helped me but you can use another guide if you want
+# imagemagick: just install the first result on google, no guide really needed for this
+# geckodriver.exe: the file should be in this repository, just put this in your python folder (this is the same folder you installed firefox in)
+
+# gameplay.mp4: you will need to download a background video. i use this (https://www.youtube.com/watch?v=ZCPt78a1eLc). also you NEED to name it "gameplay.mp4"
+# fonts: you can install any font you want you just have to change the name in the python script, also, follow this guide on installing custom fonts (https://stackoverflow.com/questions/74902247/how-do-i-give-moviepy-access-to-custom-installed-fonts-on-windows)
+# packages: to install all of the python packages use the command "pip install -r requirements.txt"
+
+# this should be all you need to install, if this still doesn't work or you need help setting it up my discord username is fartalek
+
 
 #here are your config things
 #----------------------------------------
-api_key = 'c5e4c87cb259b14d45eeaff75f668612' # your elevenlabs api token goes here
+api_key = '' # your elevenlabs api token goes here, use tempmail (https://temp-mail.org)
 voice_id = 'pNInz6obpgDQGcFmaJgB' # default is pNInz6obpgDQGcFmaJgB, this is the text to speech voice id
 
 censor_text = True # default is True
@@ -24,14 +34,13 @@ min_words = 100  # default is 100, this is the minimum length (in words) of the 
 
 bgd_video = 'gameplay.mp4'  # default is gameplay.mp4, this is the video that plays in the background
 text_colour = 'white' # default is white, this is the color of the subtitle text
+font = "LuckiestGuy" # default is LuckiestGuy, this is the font of the subtitle text
 font_size = 75 # default is 75, this is the size of the subtitle text
-stroke_weight = 4 # default is 4, this is the stroke size around the subtitle text
+stroke_weight = 3 # default is 3, this is the stroke size around the subtitle text
 stroke_colour = 'black' # default is black, this is the stroke color around the subtitle text
 
 
 
-def blur(image):
-    return gaussian(image.astype(float), sigma=2)
 
 
 
@@ -108,7 +117,7 @@ def createVideo(postnumber, commentnumber):
         driver = webdriver.Firefox()
         driver.get(url)
 
-        element = driver.find_element_by_id(f'{name}')
+        element = driver.find_element_by_id(name)
         scrrenshot = element.screenshot_as_png
         with open('post_title.png', 'wb') as f:
             f.write(scrrenshot)
@@ -138,7 +147,6 @@ def createVideo(postnumber, commentnumber):
         videostart = random.uniform(2,video.duration-videolength-2)
         video = video.cutout(0, videostart).set_duration(videolength)
 
-        endingstart = videolength-1
 
         (w, h) = video.size
 
@@ -148,19 +156,18 @@ def createVideo(postnumber, commentnumber):
         y1, y2 = 0, h
         cropped_clip = crop(video, x1=x1, y1=y1, x2=x2, y2=y2)
 
-        blurred_video = cropped_clip.fl_image(blur).set_start(endingstart).set_duration(1).crossfadein(1)
 
 
 
         title = ImageClip("post_title.png").set_start(0).set_duration(titlevoice.duration).set_pos(("center",100)).resize(width=500) # if you need to resize...
 
-        compositeclip = [cropped_clip, blurred_video, title]
+        compositeclip = [cropped_clip, title]
 
 
         for i in range(segmentslength):
             words = result["segments"][i]["words"]
             for word in words:
-                txt_clip = TextClip(word["word"], fontsize = font_size, color = text_colour, size = cropped_clip.size, method='caption', stroke_width=stroke_weight, stroke_color=stroke_colour, font="EncodeSansNarrow-Black")  
+                txt_clip = TextClip(word["word"], fontsize = font_size, color = text_colour, size = cropped_clip.size, method='caption', stroke_width=stroke_weight, stroke_color=stroke_colour, font=font)  
 
             
                 duration = word["end"] - word["start"]
